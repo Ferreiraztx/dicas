@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contagem Regressiva para o Dia dos Namorados</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Montserrat:wght@400;600&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <!-- Balões e casa (serão mostrados apenas no tema UP) -->
+    <div class="floating-up">
+        <div class="balloons"></div>
+        <div class="house"></div>
+    </div>
+
+
+    <div class="container">
+        <h1>Nosso Dia dos Namorados</h1>
+        <p class="subtitle">Uma surpresa especial está te esperando no dia 12 de junho!</p>
+
+        <div class="countdown" id="countdown"></div>
+
+        <p>Então amor, todo dia vai aparecer uma dica do seu presente <span class="heart">❤️</span></p>
+
+        <div class="hint-container" id="hintContainer">
+            <!-- As dicas serão geradas pelo JavaScript -->
+        </div>
+
+        <div class="final-message" id="finalMessage">
+            <h2>Feliz Dia dos Namorados!</h2>
+            <p>O momento tão esperado chegou! Seu presente especial é...</p>
+            <p id="finalGift" style="font-size: 1.5rem; font-weight: bold; color: var(--dark); margin-top: 20px;"></p>
+            <p style="margin-top: 20px;">Espero que você goste! Eu te amo muito, hoje e sempre! <span class="heart">❤️</span></p>
+        </div>
+    </div>
+
+    <footer>
+        Criado com muito amor para você
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Configuração das datas
+            const valentinesDay = new Date('2025-06-12T12:00:00'); // Dia dos Namorados às 11h
+            const today = new Date();
+
+            // Calcula diferença de tempo
+            const timeDiff = valentinesDay.getTime() - today.getTime();
+            const daysRemaining = Math.floor(timeDiff / (1000 * 3600 * 24));
+            const hoursRemaining = Math.floor((timeDiff % (1000 * 3600 * 24)) / (1000 * 3600));
+            const isValentinesTime = timeDiff <= 0;
+
+            // Verifica se deve ativar o tema UP (após 11h do dia 12/06)
+            if (isValentinesTime) {
+                document.body.classList.add('up-theme');
+            }
+
+            // Atualiza o contador regressivo
+            const countdownElement = document.getElementById('countdown');
+
+            function updateCountdown() {
+                if (daysRemaining > 0) {
+                    countdownElement.textContent = `Faltam ${daysRemaining} dias e ${hoursRemaining} horas para o Dia dos Namorados!`;
+                } else if (daysRemaining === 0 && hoursRemaining > 0) {
+                    countdownElement.textContent = `Faltam ${hoursRemaining} horas para o Dia dos Namorados!`;
+                } else if (timeDiff <= 0) {
+                    countdownElement.textContent = 'O Dia dos Namorados chegou!';
+                }
+            }
+
+            updateCountdown();
+
+            // Lista de dicas (personalize com suas próprias dicas)
+            const hints = [
+                "Dica 1: Tudo começa com uma lembrança",
+                "Dica 2: É uma coisa fora da casinha",
+                "Dica 3: Imagens também falam",
+                "Dica 4: Vamos fazer um clube secreto. Só nós dois",
+                "Dica 5: A aventura está lá fora!",
+                "Dica 6: É possível viajar sem sair do lugar",
+                "Dica 7: Vamos construir algo juntos",
+                "Dica 8: É de um filme que você gosta muito",
+                "Dica 9: Nossa casa não voa, mas as histórias acontecem",
+                "Dica 10: A aventura está apenas começando!"
+            ];
+
+            // Mensagem final com o presente
+            const finalGift = "Um livro de aventuras do Carl Fredricksen e da Ellie Fredricksen";
+
+            // Gera as caixas de dicas
+            const hintContainer = document.getElementById('hintContainer');
+            const finalMessage = document.getElementById('finalMessage');
+            const finalGiftElement = document.getElementById('finalGift');
+
+            // Verifica se já passou do Dia dos Namorados
+            if (isValentinesTime) {
+                finalMessage.style.display = 'block';
+                finalGiftElement.textContent = finalGift;
+                hintContainer.style.display = 'none';
+            }
+            // Se ainda estiver nos dias anteriores
+            else {
+                // Calcula quantas dicas devem ser mostradas (1 por dia)
+                const totalHints = hints.length;
+                const hintsToShow = Math.min(totalHints - daysRemaining, totalHints);
+
+                for (let i = 0; i < totalHints; i++) {
+                    const hintBox = document.createElement('div');
+                    hintBox.className = `hint-box ${i < hintsToShow ? 'unlocked' : 'locked'}`;
+
+                    const hintDay = document.createElement('div');
+                    hintDay.className = 'hint-day';
+                    hintDay.textContent = `Dia ${i + 1}`;
+
+                    const hintContent = document.createElement('div');
+                    hintContent.className = 'hint-content';
+
+                    if (i < hintsToShow) {
+                        hintContent.textContent = hints[i];
+                    } else {
+                        const daysToWait = i + 1 - (totalHints - daysRemaining);
+                        hintContent.textContent = `Dica liberada em ${daysToWait} ${daysToWait === 1 ? 'dia' : 'dias'}`;
+
+                        // Para a última dica, mostra contagem regressiva em horas se for o dia 12
+                        if (i === totalHints - 1 && daysRemaining === 0) {
+                            hintContent.textContent = `Dica liberada em ${hoursRemaining} horas`;
+                        }
+                    }
+
+                    hintBox.appendChild(hintDay);
+                    hintBox.appendChild(hintContent);
+                    hintContainer.appendChild(hintBox);
+                }
+
+                // Se todas as dicas já foram mostradas mas ainda não é Dia dos Namorados
+                if (hintsToShow === totalHints && !isValentinesTime) {
+                    const message = document.createElement('div');
+                    message.style.gridColumn = '1 / -1';
+                    message.style.marginTop = '20px';
+                    message.style.fontWeight = 'bold';
+                    message.textContent = `Aguardando ansiosamente pelo Dia dos Namorados! Faltam ${hoursRemaining} horas!`;
+                    hintContainer.appendChild(message);
+                }
+            }
+
+            // Atualiza a cada minuto para verificar se chegou a hora
+            setInterval(() => {
+                location.reload();
+            }, 60 * 1000); // Atualiza a cada minuto
+        });
+    </script>
+</body>
+
+</html>
