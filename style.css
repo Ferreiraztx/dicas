@@ -27,11 +27,19 @@
             background-image: url('1.jpg');
             background-size: cover;
             background-position: center;
-            background-attachment: fixed;
+            background-repeat: no-repeat;
+            background-attachment: fixed; /* só será desativado no mobile via media query */
             color: #fff;
             text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+            min-height: 100vh;
         }
-
+        
+        /* Ajuste para mobile */
+        @media (max-width: 768px) {
+          body.up-theme {
+            background-attachment: scroll;
+          }
+        }
         body.up-theme::before {
             content: "";
             position: fixed;
